@@ -1,3 +1,2 @@
-# Business Assistant
 
 My assistant, Robin, helps customers check available appointment times for a small tax office. It uses a mock schedule that I created for this project, so the times are examples and are not connected to a real appointment system. Requests about refunds, payments, or parking are sent to the front desk because those situations may need a real person to review them. If this assistant used real customer data, it could accidentally share private information with the wrong person. A real version would need better security and ways to protect customer information.
