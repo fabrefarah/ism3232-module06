@@ -21,25 +21,25 @@ class SupportChatbot:
         reply = self.choose_reply(user_message)
         self.history.append({"role": "assistant", "content": reply})
         return reply
-
+   
     def choose_reply(self, user_message):
-        """Choose a reply with keyword rules."""
+        """Use a rule when one applies. Otherwise ask the model."""
         text = user_message.lower()
-
         if self.needs_human(text):
             return "I can't help with that here. I'm passing you to a human agent."
-
         if "order" in text:
             return self.order_reply(user_message)
-
         if "stock" in text:
             return self.stock_reply(user_message)
+        return self.model_reply()
 
-        if "hello" in text:
-            return f"Hello! I'm {self.name}. I can check an order status for you."
-
-        return "I'm not sure how to help with that. I can check an order status."
-
+    def model_reply(self):
+        """Ask the model for a reply. Give a safe answer if the model has none."""
+        reply = self.model.reply(self.instructions, self.history)
+        if reply is None:
+            return "Sorry, I can't answer that right now. Please try again in a moment."
+        return reply
+   
     def needs_human(self, text):
         """Return True if the message is about something a person must handle."""
         for word in HANDOFF_WORDS:
@@ -70,3 +70,14 @@ class SupportChatbot:
             return "Which product? Please name the item you want me to check."
         count = self.stock_tool.count_for(product)
         return f"We have {count} of the {product} in stock."
+
+    def __init__(self, name, instructions, order_tool, stock_tool, model):
+            """Set up one chatbot with its own name, instructions, tools, model, and history."""
+            self.name = name
+            self.instructions = instructions
+            self.order_tool = order_tool
+            self.stock_tool = stock_tool
+            self.model = model
+            self.history = []
+    
+
